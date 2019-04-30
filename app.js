@@ -1,14 +1,15 @@
 //노드 모듈에서 express 가져옴
+//import는 항상 알파벳 순으로 하기
 import express from "express";
-import morgan from "morgan";
 import helmet from "helmet";
-import cookieParser from "cookie-parser";
+import morgan from "morgan";
 import bodyParser from "body-parser";
+import cookieParser from "cookie-parser";
+import { localsMiddleware } from "./middlewares";
+import globalRouter from "./routers/globalRouter";
 import userRouter from "./routers/userRouter";
 import videoRouter from "./routers/videoRouter";
-import globalRouter from "./routers/globalRouter";
 import routes from "./routes";
-
 const app = express();
 
 //const PORT = 4000;
@@ -28,11 +29,19 @@ const app = express();
 //} 
 
 //middleware territory
+
+app.set('view engine','pug');
+
+//미들웨어 어플리케이션 안전하게
+app.use(helmet());
+//쿠키를 전달받아 사용할 수 있도록 만들어주는 미들웨어 사용자 인증 같은 곳에 쓰임
+app.use(cookieParser());
+//사용자가 웹사이트로 전달하는 정보들을 검사 request에서 form이나 json형태로 된 body검사
 app.use(bodyParser.urlencoded({extended:true}));
 app.use(bodyParser.json());
-app.use(cookieParser());
-app.use(helmet());
+//미들웨어에서 발생하는 모든일을 logging
 app.use(morgan("dev"));
+app.use(localsMiddleware);
 
 
 
@@ -41,7 +50,7 @@ app.use(morgan("dev"));
 //여기에 middleware가 들어가면 profile에 들어가기전에 실행
 //app.get("/profile",handleProfile);
 
-app.use("/",globalRouter);
+app.use(routes.home,globalRouter);
 app.use(routes.users,userRouter);
 app.use(routes.videos,videoRouter);
 
