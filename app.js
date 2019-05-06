@@ -31,9 +31,10 @@ const app = express();
 //middleware territory
 
 app.set('view engine','pug');
-
 //미들웨어 어플리케이션 안전하게
 app.use(helmet());
+app.use("/uploads",express.static("uploads"));
+app.use("/static", express.static("static"));
 //쿠키를 전달받아 사용할 수 있도록 만들어주는 미들웨어 사용자 인증 같은 곳에 쓰임
 app.use(cookieParser());
 //사용자가 웹사이트로 전달하는 정보들을 검사 request에서 form이나 json형태로 된 body검사
